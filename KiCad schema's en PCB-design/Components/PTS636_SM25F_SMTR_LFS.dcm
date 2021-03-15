@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP PTS636_SM25F_SMTR_LFS
+D Tactile Switches Tact 50mA 12VDC, 6.0x3.5, 2.5mm H, 180gf, F leads, No ground pin, White Actuator
+K
+F https://ms.componentsearchengine.com/Datasheets/1/PTS636 SM25F SMTR LFS.pdf
+$ENDCMP
+#
+#End Doc Library

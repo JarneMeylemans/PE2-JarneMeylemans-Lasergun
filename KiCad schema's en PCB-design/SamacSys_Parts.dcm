@@ -1,0 +1,27 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NE555DR
+D Single Precision Timer
+K
+F http://www.ti.com/lit/ds/symlink/ne555.pdf
+$ENDCMP
+#
+$CMP 65100516121
+D WR-COM USB Connector Mini horizontal SMD Wurth Elektronik WR-COM Series Right Angle SMT Type B Mini USB Connector Receptacle, 30 V ac, 1A
+K
+F 
+$ENDCMP
+#
+$CMP UA78M33CKVURG3
+D Linear Voltage Regulators 3.3 V 500mA Fix Pos Voltage Regulator
+K
+F https://www.ti.com/lit/gpn/ua78m?HQS=ti-null-null-sf-df-pf-sep-wwe&DCM=yes
+$ENDCMP
+#
+$CMP PTS636_SK43_SMTR_LFS
+D Tactile Switches Tact 50mA 12VDC, 6.0x3.5, 4.3mm H, 250gf, G leads, No ground pin, Black Actuator
+K
+F https://componentsearchengine.com/Datasheets/1/PTS636 SK43 SMTR LFS.pdf
+$ENDCMP
+#
+#End Doc Library

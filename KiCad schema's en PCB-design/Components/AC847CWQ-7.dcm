@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP AC847CWQ-7
+D Bipolar Transistors - BJT General Purpose Transistor SOT323 T&R 3K
+K
+F https://www.diodes.com/assets/Datasheets/AC847BQ-AC847CQ-AC848BQ.pdf
+$ENDCMP
+#
+#End Doc Library
