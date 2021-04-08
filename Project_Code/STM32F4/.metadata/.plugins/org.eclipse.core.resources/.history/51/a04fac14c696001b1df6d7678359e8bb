@@ -1,0 +1,93 @@
+
+
+#include "ESP8266.h"
+
+extern UART_HandleTypeDef huart1;
+extern uint8_t RX_Buffer[100];
+extern uint8_t RX_data[100];
+uint8_t databuffer[10];
+
+void ESP8266_Init(char *SSID, char *Password)
+{
+	ESP_EmptyBuffer(RX_Buffer);
+	HAL_UART_Receive_IT(&huart1,RX_Buffer,20);
+	ESP_Send("AT\r\n");
+	if((ESP_WaitForString("AT\r\r\n\r\nOK\r\n")) == 1)
+	{
+		printf("GELUKT!!!\r\n");
+	}
+	else
+	{
+		sprintf(RX_data,"FAIL:\"%s\" \r\n",RX_Buffer);
+		printf(RX_data);
+	}
+
+	//ESP_Send("AT+RST\r\n");		// resetten van de ESP8266
+	//HAL_UART_Receive_IT(&huart1, RX_Buffer,4);
+	/* AT */
+	/*HAL_Delay(1000);
+	ESP_Send("AT\r\n");
+	HAL_Delay(20);
+	sprintf(RX_data,"output = %s \r\n",RX_Buffer);
+	printf(RX_data);
+	/* AT + CWMODE = 2 */
+	/*ESP_Send("AT+CWMODE=1\r\n");
+	HAL_Delay(10);
+	sprintf(RX_data,"output = %s \r\n",RX_Buffer);
+	printf(RX_data);*/
+
+	/* AT */
+	//ESP_Send("AT+CWJAP=\"LaserBoard\",\"12345678\"\r\n");
+	//HAL_Delay(1000);
+
+}
+
+void ESP_EmptyBuffer(uint8_t Buffer[])
+{
+	// Ga de buffer leegmaken zodat er plaats is voor nieuwe data
+	/*for(uint8_t i = 0; i < sizeof(Buffer) ; i++)
+	{
+		Buffer[i] = '\0'; //leeg karakter
+	}*/
+	memset(Buffer, '\0', sizeof Buffer);
+}
+
+uint8_t ESP_IsDataAvailable(void)
+{
+
+	for(uint8_t i = 0; i < 100 ; i++)
+	{
+		if(RX_Buffer[i] != '\0')
+		{
+			return 1; 	//data available
+		}
+	}
+	return 0;
+}
+
+
+uint8_t ESP_WaitForString(char *string[])
+{
+	//ESP_EmptyBuffer(RX_Buffer);
+	sprintf(RX_data,"\r\nRXBUF:\"%s\" \r\n",RX_Buffer);
+	printf(RX_data);
+	//ESP_EmptyBuffer(RX_Buffer);
+
+	while(ESP_IsDataAvailable() != 1)
+	{
+		//wachten tot we iets hebben ontvangen
+	}
+
+	if(strcmp(RX_Buffer,string) == 0)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+void ESP_Send(char * data)
+{
+	HAL_UART_Transmit(&huart1, (uint8_t*) data, strlen(data), 100);
+	HAL_Delay(10);
+}

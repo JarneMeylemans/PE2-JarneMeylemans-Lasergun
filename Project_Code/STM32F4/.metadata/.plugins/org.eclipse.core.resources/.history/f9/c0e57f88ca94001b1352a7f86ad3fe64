@@ -1,0 +1,36 @@
+
+
+#include "ESP8266.h"
+
+extern UART_HandleTypeDef huart1;
+char *databuffer[245];
+
+void ESP8266_Init(char *SSID, char *Password)
+{
+
+	ESP_Send("AT+RST\r\n");		// resetten van de ESP8266
+	HAL_Delay(100);
+	HAL_UART_Receive(&huart1,databuffer,245,100);
+	HAL_Delay(100);
+	/* AT */
+	ESP_Send("AT\r\n");
+
+	HAL_Delay(10);
+	printf("\r\nOUTPUT=");
+	printf(databuffer);
+	printf("\r\n");
+	/* AT + CWMODE = 2 */
+	ESP_Send("AT+CWMODE=1\r\n");
+	HAL_Delay(10);
+
+	/* AT */
+	ESP_Send("AT+CWJAP=\"LaserBoard\",\"12345678\"\r\n");
+	HAL_Delay(10);
+
+}
+
+void ESP_Send(char * data)
+{
+	HAL_UART_Transmit(&huart1, (uint8_t*) data, strlen(data), 100);
+	HAL_Delay(10);
+}
