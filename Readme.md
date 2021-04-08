@@ -8,3 +8,4 @@ Het doel van dit project zal zijn te weten komen hoe een lasergun kan werken. He
 
 Via een scherm kan de speler zien hoeveel kogels hij nog heeft en wat zijn score is in het spel. 
 
+![alt text](https://github.com/JarneMeylemans/PE2-JarneMeylemans-Lasergun/blob/main/Documenten/Foto's/pcb.jpg?raw=true)
