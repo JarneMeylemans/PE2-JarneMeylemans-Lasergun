@@ -68,6 +68,8 @@ void Error_Handler(void);
 #define TRIGGER_GPIO_Port GPIOA
 #define PWM38k_IR_Pin GPIO_PIN_12
 #define PWM38k_IR_GPIO_Port GPIOB
+#define UART_IR_Pin GPIO_PIN_6
+#define UART_IR_GPIO_Port GPIOC
 #define ROT_SW_Pin GPIO_PIN_9
 #define ROT_SW_GPIO_Port GPIOC
 #define ROT_A_Pin GPIO_PIN_8

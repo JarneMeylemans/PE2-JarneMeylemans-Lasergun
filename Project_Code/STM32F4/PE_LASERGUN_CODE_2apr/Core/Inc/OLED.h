@@ -46,6 +46,11 @@ char OLED_PrintStr( char* str , FontDef_t* Font, OLED_COLOR color);
 
 void OLED_DrawBitmap(int8_t x, int8_t y, const unsigned char* bitmap, int8_t w, int8_t h, uint8_t color);
 
+void OLED_DrawFillRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, OLED_COLOR color );
+
+void OLED_DrawRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, OLED_COLOR color);
+
+
 /* I2C Functions */
 void OLED_I2C_WriteMultiple(uint8_t address, uint8_t reg, uint8_t* data, uint16_t count );
 

@@ -32,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define RXBUFSIZE 100
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,6 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+
 
 /* USER CODE END PV */
 
@@ -56,9 +57,14 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_usart1_rx;
+extern TIM_HandleTypeDef htim6;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
+uint32_t g_uartByteCounter = 0;
+char g_uartBuffer[600];
+uint8_t g_uartHasReceived = 0;
+uint8_t FullBuffer_flag = 0;
+
 
 /* USER CODE END EV */
 
@@ -204,6 +210,46 @@ void SysTick_Handler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+	char received = huart1.Instance->DR;
+	switch (FullBuffer_flag)
+	{
+	case 0 :					// FullBuffer_flag is 0: wachten tot we een '\n' ontvangen hebben en dan de string beindigen
+		if(received == '\n')	// wanneer \n ontvangen is de string gaan beindigen
+			{
+				g_uartBuffer[g_uartByteCounter] = '\n';
+				g_uartBuffer[g_uartByteCounter + 1] = '\0';
+				g_uartByteCounter = 0;
+				g_uartHasReceived = 1;
+			}
+			else
+			{
+				g_uartBuffer[g_uartByteCounter] = received;
+				//TODO: oveflow checken
+				g_uartByteCounter++;
+			}
+		break;
+
+	case 1 :				// FullBuffer_flag is 1: gaat alles bijhouden en we kunnen altijd de string gaan opvragen (manueel gaan leegmaken)
+
+		if(g_uartByteCounter != sizeof(g_uartBuffer) - 1)
+		{
+			//alles in buffer gaan steken
+			g_uartBuffer[g_uartByteCounter] = received;
+			g_uartBuffer[g_uartByteCounter+1] = '\0';
+			g_uartByteCounter++;
+		}
+		else
+		{
+			//Als buffer volledig vol zit dan toch nog in de laatste plaats een '\0' gaan zetten
+			g_uartBuffer[RXBUFSIZE-1] = '\0';
+			g_uartHasReceived = 1;
+		}
+	}
+
+
+	//Enable Data Register Not Empty interrupt
+	SET_BIT(huart1.Instance->CR1, USART_CR1_RXNEIE);	//terug opzetten van de interrupt
+	return;
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
@@ -213,17 +259,17 @@ void USART1_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA2 stream5 global interrupt.
+  * @brief This function handles TIM6 global interrupt and DAC channel underrun error interrupt.
   */
-void DMA2_Stream5_IRQHandler(void)
+void TIM6_DAC_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA2_Stream5_IRQn 0 */
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 
-  /* USER CODE END DMA2_Stream5_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_rx);
-  /* USER CODE BEGIN DMA2_Stream5_IRQn 1 */
+  /* USER CODE END TIM6_DAC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
 
-  /* USER CODE END DMA2_Stream5_IRQn 1 */
+  /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

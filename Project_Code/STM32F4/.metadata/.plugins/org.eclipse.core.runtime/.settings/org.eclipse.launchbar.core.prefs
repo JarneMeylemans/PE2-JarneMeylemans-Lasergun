@@ -3,5 +3,6 @@ LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=w
 configDescList=org.eclipse.launchbar.core.descriptorType.default\:PE_LASERGUN_CODE_2apr.elf,org.eclipse.launchbar.core.descriptorType.default\:PE_LASERGUN_CODE_2apr Debug
 eclipse.preferences.version=1
 org.eclipse.launchbar.core.descriptorType.default\:PE_LASERGUN_CODE_2apr\ Debug/activeLaunchMode=debug
+org.eclipse.launchbar.core.descriptorType.default\:PE_LASERGUN_CODE_2apr\ Debug/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
 org.eclipse.launchbar.core.descriptorType.default\:PE_LASERGUN_CODE_2apr.elf/activeLaunchMode=run
 org.eclipse.launchbar.core.descriptorType.default\:PE_LASERGUN_CODE_2apr.elf/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local

@@ -292,6 +292,38 @@ void OLED_DrawBitmap(int8_t x, int8_t y, const unsigned char* bitmap, int8_t w, 
 	}
 }
 
+void OLED_DrawFillRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, OLED_COLOR color )
+{
+	for(uint8_t j = y; j < height + y; j++)
+	{
+		for(uint8_t i = x; i < width + x ; i++)
+		{
+			OLED_DrawPixel(i,j,color);
+		}
+	}
+}
+
+void OLED_DrawRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, OLED_COLOR color)
+{
+	uint8_t count = y;
+	for(uint8_t j = y; j < height + y ; j++)
+	{
+		for( uint8_t i = x; i < width +x ; i++)
+		{
+			if(j == y || j == (y + height) - 1 )
+			{
+				OLED_DrawPixel(i,j,color);
+			}
+			else if(i == x || i == ( width + x) - 1)
+			{
+				OLED_DrawPixel(i,j,color);
+			}
+		}
+		count++;
+	}
+
+}
+
 /* --------------------------------I2C---------------------------------------- */
 /* =========================================================================== */
 

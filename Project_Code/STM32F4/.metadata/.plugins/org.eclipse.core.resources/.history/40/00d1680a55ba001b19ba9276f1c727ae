@@ -1,0 +1,34 @@
+#include "main.h"
+#include "stm32f4xx_hal.h"
+
+/* typedef deelnemer aanmaken */
+typedef struct
+{
+	uint8_t ID;			// elke speler heeft een ID ( deze wordt verstuurd over de UART IR )
+	char Name[20]; 		// Naam van de speler ( vaste naam bijgehouden in de lijst )
+
+} PLAYER ;
+
+/* deelnemerslijst */
+
+PLAYER deelnemerslijst[10] =
+{
+	//	{  ID ,  Name 			}
+		{ 10 , "RED" 			},
+		{ 20 , "GREEN"			},
+		{ 30 , "BLUE"			},
+		{ 40 , "YELLOW" 		}, 		/* vergeet hier geen ',' te zetten!!!*/
+	 	{ 50 , "ORANGE"			},
+		{ 60 , "PURPLE"			},
+		{ 70 , "PINK"		    },
+		{ 80 , "BLACK"			},
+		{ 90 , "WHITE"			}
+		//{ 		, 				},
+
+};
+
+
+/* FUNCTIES */
+
+uint8_t LookForKillerID( uint8_t DATA );
+uint8_t NameOfKillerInString( char * string[] , uint8_t DATA );

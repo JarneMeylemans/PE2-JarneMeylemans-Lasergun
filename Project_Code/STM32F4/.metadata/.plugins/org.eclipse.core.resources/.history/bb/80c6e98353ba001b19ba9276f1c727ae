@@ -1,0 +1,8 @@
+#include "main.h"
+#include "stm32f4xx_hal.h"
+
+
+/* FUNCTIES */
+
+uint8_t LookForKillerID( uint8_t DATA );
+uint8_t NameOfKillerInString( char * string[] , uint8_t DATA );

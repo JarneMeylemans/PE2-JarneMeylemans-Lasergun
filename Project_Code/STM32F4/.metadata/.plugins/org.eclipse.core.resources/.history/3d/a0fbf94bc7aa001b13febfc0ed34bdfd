@@ -1,0 +1,37 @@
+
+#include "Tones.h"
+
+extern TIM_HandleTypeDef htim9;
+
+void Tone_Tim9( uint16_t frequency, uint8_t prescaler)
+{
+	uint16_t ARR;
+
+	ARR = ((100000000)/((prescaler + 1) * frequency)) - 1;
+	TIM9->ARR = ARR;
+	TIM9->PSC = prescaler;
+
+	TIM9->CCR1 = ARR/2;
+}
+
+void Tone_GunShot(void)
+{
+	HAL_TIM_PWM_Start(&htim9,TIM_CHANNEL_1);
+	for(uint16_t i = 4000 ; i > 800 ; i = i - 150)
+	{
+		Tone_Tim9(i,100);
+		HAL_Delay(10);
+	}
+	HAL_TIM_PWM_Stop(&htim9,TIM_CHANNEL_1);
+}
+
+void Tone_BulletsEmpty(void)
+{
+	HAL_TIM_PWM_Start(&htim9,TIM_CHANNEL_1);
+	for(uint16_t i = 4000 ; i > 3000 ; i = i - 150)
+	{
+			Tone_Tim9(i,100);
+			HAL_Delay(10);
+	}
+	HAL_TIM_PWM_Stop(&htim9,TIM_CHANNEL_1);
+}

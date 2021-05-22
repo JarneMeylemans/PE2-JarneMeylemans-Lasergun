@@ -1,0 +1,508 @@
+
+#include "LaserGun.h"
+#include "Images.h"
+
+#define SSID "LaserBoard"
+#define PASSWD "12345678"
+
+#define true 1
+#define false 0
+
+#define RotPerSelect 5
+#define MAX_KOGELS 16
+#define MAX_HP 100
+
+#define StartUp_Mode 	0
+#define Menu_Mode 		1
+#define Game_Mode 		2
+#define Play_Mode		3
+#define ErrorMode		8		//Als er zich een Error heeft voorgedaan
+
+extern TIM_HandleTypeDef htim1;
+volatile uint32_t tim1_cnt = 0;
+uint32_t rotCnt = 0;
+uint8_t SelectedMenu = 0;
+extern uint8_t g_uartHasReceived;
+extern char g_uartBuffer[600];
+
+char StrBuf[50];
+
+/* parameters voor het spel */
+uint8_t kogels;		//duidt aan hoeveel kogels de speler heeft
+uint8_t GunIsHit; 	//duidt aan of speler geraakt is (in timeout is)
+uint8_t HP;			//duidt aan hoeveel health points de speler nog heeft
+
+
+uint8_t StartUp_Functions(void)
+{
+	printf("StartUp Begin \r\n");
+
+	/* OLED gaan klaarzetten */
+
+	/* Device gaan zoeken */
+	printf("Looking for Device.");
+	int8_t DevCount = 3;
+	while(DevCount > 0)
+	{
+		DevCount--;
+		if(OLED_Init())
+		{
+			//oled geinitialliseerd en gevonden (loop beindigen)
+			printf("\r\nDevice Gevonden!\r\n");
+			DevCount = -1;
+		}
+		else
+		{
+			//geen device gevonden
+			printf(".");
+		}
+		HAL_Delay(100); //kleine delay
+	}
+
+	if(DevCount != -1)
+	{
+		//er is geen device gevonden
+		printf("\r\n No Device Found! \r\n");
+		return 8; //in error mode gaan
+	}
+
+	OLED_Clear();
+
+	OLED_SetXY(0,0);
+	OLED_PrintStr("OLED ready!", &Font_7x10, OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(500);
+
+	/* Encoder gaan starten */
+
+	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
+	printf("Encoder Start\r\n");
+
+	OLED_SetXY(0,10);
+	OLED_PrintStr("Encoder Ready!", &Font_7x10, OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(500);
+
+	/* Draadloze verbinding opstellen */
+
+	Setup_WirelessConnection();
+
+
+	printf("display welcome screen on oled.\r\n");
+	OLED_Clear();
+	Setup_WelcomeScreen();
+
+	uint32_t whilecounter = 0;
+	while(HAL_GPIO_ReadPin(ROT_SW_GPIO_Port, ROT_SW_Pin) == 1)
+	{
+		//loop tot er op Start is geduwt
+		whilecounter++;
+		if(whilecounter > 5000)
+		{
+			OLED_Clear();
+			printf("SleepMode\r\n");
+			while(HAL_GPIO_ReadPin(ROT_SW_GPIO_Port,ROT_SW_Pin) == 1)
+			{
+				//nog een loop waar het scherm niet zou kunnen inbranden
+				HAL_Delay(10);
+			}
+			whilecounter = 0;
+			printf("return from Sleep\r\n");
+			Setup_WelcomeScreen();
+		}
+		HAL_Delay(10);
+	}
+	HAL_Delay(500);
+	printf("NextState!\r\n");
+	OLED_Clear();
+	return 1;	//NextState = Menu Mode
+}
+
+
+void Setup_WirelessConnection(void)
+{
+	uint8_t error;
+	//instellingen klaar zetten om gun te gaan laten communiceren met centraal punt
+	printf("connecting to AP...\r\n\r\n");
+	error = ESP8266_Init("LaserBoard","12345678");
+	//error = ESP8266_Init("ORBI07","LMlm5m**");
+	OLED_SetXY(0,20);
+	if(error == 0)
+	{
+		OLED_PrintStr("WIFI GOT CONNECTED!", &Font_7x10, OLED_BLUE);
+	}
+	else if(error == 1)
+	{
+		OLED_PrintStr("WIFI: LARGE ERROR!", &Font_7x10, OLED_BLUE);
+	}
+	else if(error == 3)
+	{
+		OLED_PrintStr("WIFI SMALL ERROR", &Font_7x10, OLED_BLUE);
+	}
+	else
+	{
+		OLED_PrintStr("non expected error", &Font_7x10, OLED_BLUE);
+	}
+	OLED_UpdateScreen();
+	HAL_Delay(1000);
+
+	printf("\r\n\r\nSend Data To Host \r\n"
+		   "----------------- \r\n");
+	error = ESP_SendDataToIP("192.168.10.1","test");
+	OLED_SetXY(0,30);
+	if(error == 0)
+	{
+		OLED_PrintStr("DATA TRANSMITTED", &Font_7x10, OLED_BLUE);
+	}
+	else if(error == 1)
+	{
+		OLED_PrintStr("*TRANSMIT ERROR*", &Font_7x10, OLED_BLUE);
+
+	}
+	else
+	{
+		OLED_PrintStr("non expected error", &Font_7x10, OLED_BLUE);
+	}
+	OLED_UpdateScreen();
+
+	/*while(1)
+	{
+		printf("string: '%s'\r\n\r\n",g_uartBuffer);
+		HAL_Delay(1000);
+	}*/
+	HAL_Delay(5000);
+
+
+}
+
+void Setup_WelcomeScreen(void)
+{
+	OLED_DrawBitmap(10,5,Gun,112,47,OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(1000);
+	OLED_DrawBitmap(10,5,ShootingGun,112,47,OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(500);
+	OLED_Fill(OLED_BLACK);
+	OLED_DrawBitmap(10,5,Gun,112,47,OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(1000);
+
+	OLED_SetXY(10,45);
+	OLED_PrintStr("  Welcome!  ", &Font_11x18,OLED_BLUE);
+	OLED_DrawBitmap(10,5,ShootingGun,112,47,OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(500);
+
+	OLED_Fill(OLED_BLACK);
+	OLED_SetXY(10,45);
+	OLED_PrintStr("  Welcome!  ", &Font_11x18,OLED_BLUE);
+	OLED_DrawBitmap(10,5,Gun,112,47,OLED_BLUE);
+
+
+	OLED_SetXY(40,35);
+	OLED_PrintStr("Press Start", &Font_7x10,OLED_BLUE);
+	OLED_UpdateScreen();
+}
+
+
+uint8_t Menu_Functions(void)
+{
+	/* Toon een menu waar we kunnen kiezen tussen 3 opties */
+
+	tim1_cnt = (htim1.Instance->CNT);	//haal variable van rotary encoder op , RotPerSelect = aantal kliks per rotatie
+
+	if(rotCnt != tim1_cnt)
+	{
+		if(rotCnt > tim1_cnt)
+		{
+			SelectedMenu++;
+			if(SelectedMenu > 3)
+			{
+				SelectedMenu = 3;
+			}
+		}
+		else
+		{
+			SelectedMenu--;
+			if(SelectedMenu < 0)
+			{
+				SelectedMenu = 0;
+			}
+		}
+
+		rotCnt = tim1_cnt;
+		/*Update het scherm met nieuwe gegevens*/
+		OLED_Fill(OLED_BLACK);
+		DisplaySelectedMenu(SelectedMenu);
+		OLED_UpdateScreen();
+
+	}
+
+
+	/*Knop gaan testen*/
+	/* als knop ingedrukt wordt gaan we de nieuwe state moeten returnen */
+	if(HAL_GPIO_ReadPin(ROT_SW_GPIO_Port,ROT_SW_Pin) == 0)
+	{
+		switch (SelectedMenu)
+		{
+		case 1:
+			ESP8266_Init(SSID,PASSWD);
+			return 1; //terug naar menu
+			break;
+		case 2:
+			return 2; //play game
+			break;
+		case 3:
+			return 3; //exit
+			break;
+		default:
+			break;
+		}
+	}
+
+	return 1;
+}
+
+void DisplaySelectedMenu(uint8_t Menu)
+{
+	OLED_SetXY(5,10);
+	switch ( Menu )
+	{
+	// Optie 1
+	case 1:
+		OLED_SetXY(5,0);
+		OLED_PrintStr("> Wifi connect  ", &Font_11x18,OLED_BLACK);
+		OLED_SetXY(5,20);
+		OLED_PrintStr("> Play  ", &Font_11x18,OLED_BLUE );
+		OLED_SetXY(5,40);
+		OLED_PrintStr("> Exit  ", &Font_11x18, OLED_BLUE);
+		break;
+	// Optie 2
+	case 2:
+		OLED_SetXY(5,0);
+		OLED_PrintStr("> Wifi connect  ", &Font_11x18,OLED_BLUE);
+		OLED_SetXY(5,20);
+		OLED_PrintStr("> Play  ", &Font_11x18,OLED_BLACK);
+		OLED_SetXY(5,40);
+		OLED_PrintStr("> Exit   ", &Font_11x18, OLED_BLUE);
+		break;
+	// Optie 3
+	case 3:
+		OLED_SetXY(5,0);
+		OLED_PrintStr("> Wifi connect  ", &Font_11x18,OLED_BLUE);
+		OLED_SetXY(5,20);
+		OLED_PrintStr("> Play  ", &Font_11x18,OLED_BLUE );
+		OLED_SetXY(5,40);
+		OLED_PrintStr("> Exit  ", &Font_11x18, OLED_BLACK);
+		break;
+	// Geen optie geselecteerd
+	default:
+			OLED_SetXY(5,0);
+			OLED_PrintStr("> Wifi connect  ", &Font_11x18,OLED_BLUE);
+			OLED_SetXY(5,20);
+			OLED_PrintStr("> Play  ", &Font_11x18,OLED_BLUE );
+			OLED_SetXY(5,40);
+			OLED_PrintStr("> Exit  ", &Font_11x18, OLED_BLUE);
+
+			break;
+	}
+}
+
+uint8_t Game_Functions(void)
+{
+	/* -> zeggen dat je ready bent
+	 * -> wacht op access point om te vermelden dat er mag gestart worden
+	 */
+	OLED_Clear();
+	//Send To AP -> ready + name
+	OLED_SetXY(0,0);
+	OLED_PrintStr("Send READY ",&Font_7x10, OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(500);
+
+	//wait for start signal from AP
+	OLED_SetXY(0,10);
+	OLED_PrintStr("Waiting for start...",&Font_7x10,OLED_BLUE);
+	OLED_UpdateScreen();
+	HAL_Delay(500);
+
+	/*PARAMETERS VOOR STARTEN VAN HET SPEL GAAN KLAARZETTEN */
+	/* Kogels op een waarde gaan zetten */
+	kogels = MAX_KOGELS;
+	/* timeout zal nog niet getriggerd zijn in het begin */
+	GunIsHit = 0;
+	return Play_Mode;
+}
+
+
+/*
+ * Play_Functions:
+ * de functie die de laserboard zal uitvoeren als we het spel aan het spelen zijn
+ *
+ *
+ * -> refreshed altijd het scherm en update de parameters op het scherm
+ * -> controlleert ofdat we geraakt zijn door een andere lasergun
+ * 		wanneer geraakt dan moet de Gun voor een bepaalde tijd in een time out zitten
+ * -> wanneer Trigger wordt ingedrukt dan via IR led data gaan sturen
+ * ->
+ */
+uint8_t Play_Functions(void)
+{
+	/* Scherm gaan refreshen met alle parameters
+	 * parameters:
+	 * 	-> kogels = aantal kogels nog in het magazijn (uint8_t)
+	 * 	-> HP = aantal Heilth Points van Lasergun (uint8_t)
+	 * 	-> Batterypercentage = waarde van hoeveel de batterij is gevuld (uint8_t) (0-100%)
+	 * 	-> GunIsHit = boolean waarde die weergeeft ofdat Gun in timeout is of niet
+	 */
+
+	/* Batterypercentage is een variabele die wordt aangepast in interrupt*/
+
+	/*Controlleren of Gun is geraakt met de juiste IR code */
+	if(GunIsHit == true )
+	{
+		// Gun in timeout gaan plaatsen
+		printf("LaserBoard is geraakt \r\n");
+
+		return 4; 	//TimeOut mode
+	}
+
+
+
+
+	/* Scherm gaan updaten */
+	OLED_Fill(OLED_BLACK);
+	DisplayPlayMenu(5,10,45);
+	OLED_UpdateScreen();
+
+	HAL_Delay(1000);
+	return Play_Mode;
+}
+
+void DisplayPlayMenu(uint8_t kogels, uint8_t health, uint8_t battery)
+{
+	/* Alles op het scherm gaan verwijderen */
+	OLED_Fill(OLED_BLACK);
+
+	/* Rechthoeken van de Menu gaan tekenen */
+	uint8_t StrBuf[20];
+	//OLED_DrawRectangle(0,0,128,64,OLED_BLUE);
+	OLED_DrawRectangle(0,50,128,14,OLED_BLUE);
+
+
+	/* Health bar gaan tekenen  */
+	OLED_DrawRectangle(2,52,100,10,OLED_BLUE);
+	OLED_DrawFillRectangle(2,52,health,10,OLED_BLUE);
+	/* Health Points afdrukken */
+	sprintf(StrBuf,"%d",health);
+	OLED_SetXY(104,53);
+	OLED_PrintStr(StrBuf,&Font_7x10,OLED_BLUE);
+
+	/* Kogels gaan afdrukken op het scherm */
+	sprintf(StrBuf,"%d",kogels);
+	OLED_SetXY(1,2);
+	OLED_PrintStr(StrBuf,&Font_16x26,OLED_BLUE);
+	sprintf(StrBuf,"/%d",16);
+	OLED_SetXY(34,17);
+	OLED_PrintStr(StrBuf,&Font_7x10,OLED_BLUE);
+
+	/* BatteryCapacity gaan afdrukken */
+	if(battery >= 75 )
+	{
+		/* Battery groter dan 75% */
+		OLED_DrawBitmap(106,2,FullBattery,20,10,OLED_BLUE);
+	}
+	else if( battery >= 40 )
+	{
+		/* Battery groter dan 40% */
+		OLED_DrawBitmap(106,2,MidBattery,20,10,OLED_BLUE);
+	}
+	else if (battery >= 25 )
+	{
+		/*Battery groter dan 25% */
+		OLED_DrawBitmap(106,2,LowBattery,20,10,OLED_BLUE);
+	}
+	else
+	{
+		/* Battery lager dan 25% en groter dan 0% */
+		OLED_DrawBitmap(106,2,EmptyBattery,20,10,OLED_BLUE);
+	}
+
+}
+
+uint8_t TimeOut_Functions(void)
+{
+	/*TimeOut_Functions gaat de timeout van een gehit laserboard gaan afhandelen
+	 * namelijk:
+	 * -> op scherm tonen dat persoon geraakt is,
+	 * -> aantal seconden nog te wachten
+	 * -> door wie hij geraakt is
+	 * -> Hoeveel HP hij over heeft
+	 * -> (als dood Game Over weergeven en spel beiindigen)
+	 */
+
+	//TODO: interrupten en overige dingen afzetten zodat we niet kunnen geraakt worden in timeout
+
+	uint8_t counter;
+
+	char nameOfKiller[20];
+	//TODO:WhoIsNameOfKiller(); 	//gaan opvragen wie de killer was
+	sprintf(nameOfKiller,"Killer");
+	// Display Updaten
+
+	/* YOU ARE HIT */
+	OLED_Fill(OLED_BLACK);
+	OLED_SetXY(10,0);
+	OLED_PrintStr("YOU ARE", &Font_16x26,OLED_BLUE);
+	OLED_SetXY(40,27);
+	OLED_PrintStr("HIT!", &Font_16x26,OLED_BLUE);
+
+	/* Hit By: ... */
+	OLED_SetXY(50,40);
+	sprintf(StrBuf,"Hit By: %s ",nameOfKiller);
+	OLED_PrintStr(StrBuf,&Font_7x10,OLED_BLUE);
+
+	/* HP left */
+	OLED_SetXY(30,50);
+	sprintf(StrBuf,"HP left : %d ",HP);
+	OLED_PrintStr(StrBuf,&Font_11x18,OLED_BLUE);
+
+	/* display updaten */
+	OLED_UpdateScreen();
+	HAL_Delay(1000);
+
+	for(counter = 10 ; counter <= 0 ; counter++ )
+	{
+		/* Loop van 10s timeout / speler kan hier niets doen */
+		if(counter > 0)
+		{
+			OLED_SetXY(55,25);
+			sprintf(StrBuf,"%d",counter);
+			OLED_PrintStr(StrBuf,&Font_16x26,OLED_BLACK);
+		}
+		else
+		{
+			OLED_SetXY(55,25);
+			OLED_PrintStr("GO!",&Font_16x26,OLED_BLACK);
+		}
+
+		OLED_UpdateScreen();
+
+		//delay van 1s
+		HAL_Delay(1000);
+	}
+
+	/* Scherm weer gaan clearen */
+	OLED_Clear();
+
+	/*GunIsHit = false*/
+	GunIsHit = false;
+
+	return Play_Mode;
+
+
+
+
+}
+

@@ -1,2 +1,0 @@
-
-void DisplayMenu( uint8_t Selected );

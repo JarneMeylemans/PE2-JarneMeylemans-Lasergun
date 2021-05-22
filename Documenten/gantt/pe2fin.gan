@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Practice Enterprise final" company="" webLink="http://" view-date="2021-02-08" view-index="0" gantt-divider-location="414" resource-divider-location="300" version="2.8.11" locale="nl_NL">
+    <description/>
+    <view zooming-state="default:7" id="gantt-chart">
+        <field id="tpd3" name="Naam" width="380" order="0"/>
+        <field id="tpd4" name="Begin datum" width="15" order="1"/>
+        <field id="tpd5" name="Eind datum" width="15" order="2"/>
+        <timeline><![CDATA[9,496,158,12,186,114,6,4,229,277,0,118,13]]></timeline>
+        <option id="color.recent"><![CDATA[#ffff00 #0000cc #33ccff #ffff66 #ffcc33 #000000 #66ff33 #ff0000 #00ffcc #0000ff]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Naam" width="210" order="0"/>
+        <field id="1" name="Standaard rol" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" name="componenten kiezen" color="#66ff33" meeting="false" start="2021-02-16" duration="11" complete="0" thirdDate="2021-01-28" thirdDate-constraint="0" expand="true"/>
+        <task id="4" name="datasheets componenten lezen" color="#ff0000" meeting="false" start="2021-02-16" duration="11" complete="0" thirdDate="2021-02-01" thirdDate-constraint="0" expand="true"/>
+        <task id="6" name="Schakeling tekenen (KICAD)" color="#66ff33" meeting="false" start="2021-02-16" duration="19" complete="0" thirdDate="2021-02-01" thirdDate-constraint="0" expand="true"/>
+        <task id="9" name="PCB layout tekenen" color="#66ff33" meeting="false" start="2021-03-15" duration="12" complete="0" thirdDate="2021-02-11" thirdDate-constraint="0" expand="true"/>
+        <task id="12" name="PCB afgemaakt en besteld" color="#0000ff" meeting="true" start="2021-03-31" duration="0" complete="0" thirdDate="2021-03-25" thirdDate-constraint="0" expand="true"/>
+        <task id="13" name="Test Code schrijven" color="#ffff00" meeting="false" start="2021-02-16" duration="40" complete="0" thirdDate="2021-02-22" thirdDate-constraint="0" expand="true"/>
+        <task id="114" name="PCB SMD Componenten besteld" color="#0000cc" meeting="true" start="2021-03-23" duration="0" complete="0" thirdDate="2021-02-15" thirdDate-constraint="0" expand="true"/>
+        <task id="118" name="PCB bestukken" color="#33ccff" meeting="false" start="2021-04-08" duration="6" complete="0" thirdDate="2021-02-15" thirdDate-constraint="0" expand="true"/>
+        <task id="158" name="Eerste PCB bestukt" color="#0000cc" meeting="true" start="2021-04-16" duration="0" complete="0" thirdDate="2021-03-31" thirdDate-constraint="0" expand="true"/>
+        <task id="186" name="Test Code overzetten naar nieuwe PCB" color="#ffff00" meeting="false" start="2021-04-19" duration="7" complete="0" thirdDate="2021-02-15" thirdDate-constraint="0" expand="true"/>
+        <task id="228" name="Code voor eigen bordje schrijven" color="#ffcc33" meeting="false" start="2021-04-19" duration="20" complete="0" thirdDate="2021-03-08" thirdDate-constraint="0" expand="true">
+            <task id="229" name="WIFI communicatie sotfware" color="#ffff00" meeting="false" start="2021-05-10" duration="5" complete="4" thirdDate="2021-04-05" thirdDate-constraint="0" expand="true"/>
+            <task id="277" name="OLED code" color="#ffff66" meeting="false" start="2021-04-26" duration="5" complete="0" thirdDate="2021-04-05" thirdDate-constraint="0" expand="true"/>
+            <task id="310" name="Rotary encoder code" color="#ffff00" meeting="false" start="2021-04-26" duration="5" complete="0" thirdDate="2021-03-22" thirdDate-constraint="0" expand="true"/>
+            <task id="330" name="interface code schrijven" color="#ffff00" meeting="false" start="2021-05-03" duration="5" complete="0" thirdDate="2021-03-29" thirdDate-constraint="0" expand="true"/>
+            <task id="358" name="IR communcatie code" color="#ffff00" meeting="false" start="2021-04-19" duration="5" complete="0" thirdDate="2021-04-05" thirdDate-constraint="0" expand="true"/>
+            <task id="1167" name="alle code bij elkaar plakkenb" color="#ffff00" meeting="false" start="2021-05-10" duration="5" complete="0" thirdDate="2021-02-08" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="447" name="Ontwerpen van behuizing" color="#33ccff" meeting="false" start="2021-04-19" duration="1" complete="0" thirdDate="2021-03-29" thirdDate-constraint="0" expand="true"/>
+        <task id="496" name="Printen van behuizing" color="#33ccff" meeting="false" start="2021-04-20" duration="6" complete="0" thirdDate="2021-04-05" thirdDate-constraint="0" expand="true"/>
+        <task id="522" name="2de bordje bestukken" color="#33ccff" meeting="false" start="2021-04-09" duration="5" complete="0" thirdDate="2021-03-29" thirdDate-constraint="0" expand="true"/>
+        <task id="544" name="behuizing klaar" color="#0000cc" meeting="true" start="2021-04-28" duration="0" complete="0" thirdDate="2021-04-05" thirdDate-constraint="0" expand="true"/>
+        <task id="577" name="documentatie inorde brengen" color="#ff3333" meeting="false" start="2021-04-29" duration="18" complete="0" thirdDate="2021-04-29" thirdDate-constraint="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
