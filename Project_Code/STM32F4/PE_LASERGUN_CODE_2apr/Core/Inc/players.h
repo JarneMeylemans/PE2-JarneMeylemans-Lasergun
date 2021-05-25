@@ -16,3 +16,4 @@ typedef struct
 
 uint8_t LookForKillerID( uint8_t DATA );
 uint8_t NameOfKillerInString( char * string[] , uint8_t DATA );
+uint8_t CheckIR_Byte(uint8_t data);

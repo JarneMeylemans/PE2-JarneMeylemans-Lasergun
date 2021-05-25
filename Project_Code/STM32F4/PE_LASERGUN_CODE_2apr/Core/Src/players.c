@@ -79,3 +79,17 @@ uint8_t NameOfKillerInString ( char * string[] , uint8_t DATA )
 	strcpy(string,"Unknown");
 	return 0;
 }
+
+
+
+uint8_t CheckIR_Byte(uint8_t data)
+{
+	for(uint8_t i = 1; i <= 9; i++)
+	{
+		if(data == 10 * i )
+		{
+			return 1; 	//data is een correcte data
+		}
+	}
+	return  0; // geen correcte data
+}

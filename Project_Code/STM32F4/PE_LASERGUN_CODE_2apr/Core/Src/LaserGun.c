@@ -285,7 +285,8 @@ uint8_t Menu_Functions(void)
 			return Settings_Mode;
 			break;
 		case 2:
-			return Play_Mode;
+			printf("op knop gedrukt!\r\n");
+			return Game_Mode;
 			break;
 		case 3:
 			return StartUp_Mode; //exit terug gaan opstarten
@@ -430,9 +431,10 @@ uint8_t Play_Functions(void)
 	{
 		printf("Data Received = %d \r\n",IR_DATA_Byte);
 
-		//Controlleren of ontvangen byte een herkend geweer is
+		//bepaalde code's gaan negeren
 
-		if( LookForKillerID(IR_DATA_Byte) && IR_DATA_Byte != DeviceID )
+		//Controlleren of ontvangen byte een herkend geweer is
+		if( CheckIR_Byte(IR_DATA_Byte) && IR_DATA_Byte != DeviceID )
 		{
 			//killer is herkend
 			if(NameOfKillerInString(nameOfKiller,IR_DATA_Byte))
